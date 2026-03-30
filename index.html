@@ -1,0 +1,702 @@
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  #ls-widget {
+    --bg: #f5f4f0; --surface: #ffffff; --border: #e0ddd6; --border-strong: #c8c5bc;
+    --text: #1a1917; --text-muted: #6b6860; --text-faint: #9e9b94;
+    --accent: #2563eb; --accent-light: #eff4ff; --accent-border: #bfcffd;
+    --vaert: #0f6e56; --vaert-light: #d6f0e8; --vaert-mid: #9fe1cb;
+    --admin: #185fa5; --admin-light: #ddeaf8; --admin-mid: #b5d4f4;
+    --praes: #993c1d; --praes-light: #f8e4da; --praes-mid: #f5c4b3;
+    --ideo: #6d28d9;  --ideo-light:  #ede9fe; --ideo-mid:  #c4b5fd;
+    --danger: #dc2626; --danger-light: #fef2f2;
+  }
+  #ls-widget { font-size: 16px; }
+  #ls-widget { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; border-radius: 12px; overflow: hidden; }
+
+  /* ── Header ── */
+  #ls-widget .page-header {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 1.5rem 1.5rem 1.2rem; text-align: center;
+    position: relative; 
+  }
+  #ls-widget .page-header h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+  #ls-widget .page-header p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+  #ls-widget .progress-wrap  { display: flex; align-items: center; gap: 10px; max-width: 500px; margin: 0.75rem auto 0; }
+  #ls-widget .progress-bar   { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  #ls-widget .progress-fill  { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.35s; width: 0%; }
+  #ls-widget .progress-label { font-size: 13px; color: var(--text-muted); white-space: nowrap; min-width: 52px; text-align: right; }
+
+  /* ── Main layout ── */
+  #ls-widget .main { max-width: 660px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+  #ls-widget .section-header { display: flex; align-items: center; gap: 10px; margin: 1.75rem 0 0.85rem; }
+  #ls-widget .section-header::before, .section-header::after { content:''; flex:1; height:1px; background:var(--border); }
+  #ls-widget .section-badge { font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.07em; white-space: nowrap; }
+
+  /* ── Question cards ── */
+  #ls-widget .q-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1rem 1.2rem; margin-bottom: 0.55rem; transition: border-color 0.2s;
+  }
+  #ls-widget .q-card.answered { border-color: var(--accent-border); background: #fdfeff; }
+  #ls-widget .q-card.missing  { border-color: var(--danger); background: var(--danger-light); }
+  #ls-widget .q-num  { font-size: 11px; font-weight: 600; color: var(--text-faint); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; display: inline-block; margin-bottom: 0.45rem; }
+  #ls-widget .q-text { font-size: 14px; line-height: 1.55; color: var(--text); margin-bottom: 0.75rem; }
+
+  #ls-widget .radio-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+  #ls-widget .radio-row label { cursor: pointer; }
+  #ls-widget .radio-row input[type=radio] { display: none; }
+  #ls-widget .radio-btn {
+    display: block; text-align: center; font-size: 12px; font-family: 'DM Sans', sans-serif;
+    padding: 7px 4px; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-muted); background: var(--bg); cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s; line-height: 1.3; user-select: none;
+  }
+  #ls-widget .radio-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  #ls-widget .radio-row input[type=radio]:checked + .radio-btn { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+
+  /* ── Action bar ── */
+  #ls-widget .action-bar { margin-top: 1.75rem; text-align: center; }
+  #ls-widget .missing-note { display: none; background: var(--danger-light); color: var(--danger); border: 1px solid #fca5a5; border-radius: 8px; padding: 0.6rem 1rem; font-size: 13px; margin-bottom: 1rem; }
+  #ls-widget .btn-primary { display: inline-block; padding: 0.75rem 2.5rem; font-size: 15px; font-weight: 600; font-family: 'DM Sans', sans-serif; border: none; border-radius: 10px; background: var(--accent); color: #fff; cursor: pointer; transition: background 0.15s, transform 0.1s; }
+  #ls-widget .btn-primary:hover  { background: #1d4ed8; }
+  #ls-widget .btn-primary:active { transform: scale(0.98); }
+
+  /* ── Results ── */
+  #ls-widget .result-section { display: none; margin-top: 2.5rem; }
+  #ls-widget .result-section.show { display: block; }
+  #ls-widget .result-title { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 1.1rem; text-align: center; }
+
+  #ls-widget .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 1.5rem; }
+  #ls-widget .score-card { border-radius: 12px; padding: 0.85rem 1rem; border: 1px solid; }
+  #ls-widget .score-card.vaert { background: var(--vaert-light); border-color: var(--vaert-mid); }
+  #ls-widget .score-card.admin { background: var(--admin-light); border-color: var(--admin-mid); }
+  #ls-widget .score-card.praes { background: var(--praes-light); border-color: var(--praes-mid); }
+  #ls-widget .score-card.ideo  { background: var(--ideo-light);  border-color: var(--ideo-mid);  }
+  #ls-widget .score-label { font-size: 11px; font-weight: 600; margin-bottom: 3px; opacity: 0.75; }
+  #ls-widget .score-card.vaert .score-label { color: var(--vaert); }
+  #ls-widget .score-card.admin .score-label { color: var(--admin); }
+  #ls-widget .score-card.praes .score-label { color: var(--praes); }
+  #ls-widget .score-card.ideo  .score-label { color: var(--ideo);  }
+  #ls-widget .score-val { font-size: 26px; font-weight: 600; letter-spacing: -0.03em; }
+  #ls-widget .score-card.vaert .score-val { color: var(--vaert); }
+  #ls-widget .score-card.admin .score-val { color: var(--admin); }
+  #ls-widget .score-card.praes .score-val { color: var(--praes); }
+  #ls-widget .score-card.ideo  .score-val { color: var(--ideo);  }
+
+  /* ── Diagram wrap ── */
+  #ls-widget .diagram-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.25rem 1rem 1rem; margin-bottom: 1.25rem;
+  }
+  #ls-widget .diagram-wrap h3 {
+    font-size: 12px; font-weight: 600; color: var(--text-faint);
+    text-align: center; margin-bottom: 1rem; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  #ls-widget canvas#diagram { display: block; width: 100%; height: auto; }
+
+  /* ── Result note ── */
+  #ls-widget .result-note { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; font-size: 14px; line-height: 1.65; color: var(--text-muted); margin-bottom: 1.5rem; }
+  #ls-widget .result-note strong { color: var(--text); font-weight: 600; }
+  #ls-widget .btn-reset { display: block; width: 100%; padding: 0.65rem; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 500; border: 1px solid var(--border-strong); border-radius: 10px; background: transparent; color: var(--text-muted); cursor: pointer; transition: background 0.15s; }
+  #ls-widget .btn-reset:hover { background: var(--bg); }
+</style>
+
+<div id="ls-widget">
+<header class="page-header">
+  <h1>Kortlægning af ledelsesstil</h1>
+  <p>I min rolle som leder af frivillige lægger jeg vægt på:</p>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+    <div class="progress-label" id="prog-label">0 / 24</div>
+  </div>
+</header>
+
+<main class="main">
+  <div id="questions"></div>
+
+  <div class="action-bar">
+    <div class="missing-note" id="missing-note">Besvar venligst alle 24 spørgsmål for at se dit resultat.</div>
+    <button class="btn-primary" id="btn-submit">Se mit resultat</button>
+  </div>
+
+  <div class="result-section" id="result-section">
+    <div class="result-title">Dit resultat</div>
+
+    <div class="score-grid">
+      <div class="score-card vaert"><div class="score-label">Værten</div><div class="score-val" id="s-vaert">–</div></div>
+      <div class="score-card admin"><div class="score-label">Administratoren</div><div class="score-val" id="s-admin">–</div></div>
+      <div class="score-card praes"><div class="score-label">Præstationstripperen</div><div class="score-val" id="s-praes">–</div></div>
+      <div class="score-card ideo"><div class="score-label">Idémageren</div><div class="score-val" id="s-ideo">–</div></div>
+    </div>
+
+    <div class="diagram-wrap">
+      <h3>Skema 2.6 — Din ledelsesstil</h3>
+      <canvas id="diagram" width="500" height="500"></canvas>
+    </div>
+
+    <div class="result-note" id="result-note"></div>
+    <button class="btn-reset" id="btn-reset">↺ Start forfra</button>
+  </div>
+</main>
+
+<script>
+const answerOpts = [
+  { label:"Meget",      val: 4 },
+  { label:"En del",     val: 2 },
+  { label:"Neutral",    val: 0 },
+  { label:"Ikke meget", val:-2 },
+  { label:"Meget lidt", val:-4 }
+];
+
+// Styles: vaert=Vært, admin=Admin, praes=Præstations., ideo=Idémager
+// No style tags shown to students
+const questions = [
+  { n:1,  text:"At hjælpe og støtte de frivillige, hvis de har det svært.",                                                                   style:"vaert" },
+  { n:2,  text:"At organisere aktiviteter, så de frivillige kan løse deres opgaver grundigt og systematisk.",                                 style:"admin" },
+  { n:3,  text:"At jeg oplever og handler som en energisk og målrettet leder, når frivilliggruppen er aktiv.",                                style:"praes" },
+  { n:4,  text:"At gå foran, når frivilliggruppen står foran ændringer og forandringer.",                                                     style:"ideo"  },
+  { n:5,  text:"At formulere nogle klare retningslinjer for de frivilliges ansvar og arbejde.",                                               style:"admin" },
+  { n:6,  text:"At skabe et frivilligmiljø med plads og tid til socialt samvær og småsnak.",                                                  style:"vaert" },
+  { n:7,  text:"At inspirere de frivillige til selv at finde kreative løsninger på problemer.",                                               style:"ideo"  },
+  { n:8,  text:"At sikre mig, at alle altid udnytter deres egen tid og gruppens ressourcer effektivt og målrettet.",                          style:"praes" },
+  { n:9,  text:"At opmunte, anerkende, støtte og motivere de frivillige.",                                                                    style:"vaert" },
+  { n:10, text:"At have nogle procedurer, der sikrer, at jeg altid kan tjekke, om de frivillige følger planerne.",                           style:"admin" },
+  { n:11, text:"At jeg altid selv går foran og yder en effektiv indsats for, at vi når vores mål.",                                          style:"praes" },
+  { n:12, text:"At sikre gode faciliteter og rammer for, at de frivillige kan arbejde selvstændigt.",                                         style:"ideo"  },
+  { n:13, text:"At jeg træffer mine beslutninger på basis af klare og sikre fakta.",                                                          style:"admin" },
+  { n:14, text:"At kende de frivilliges baggrund, værdier og holdninger.",                                                                   style:"vaert" },
+  { n:15, text:"At spille en central rolle i de frivilliges udvikling og nye initiativer.",                                                   style:"ideo"  },
+  { n:16, text:"At de frivillige ikke spilder tiden, men koncentrerer sig om at levere det, de skal.",                                       style:"praes" },
+  { n:17, text:"At mægle, når frivillige har forskellige meninger og interesser, der truer med at skabe konflikter.",                        style:"vaert" },
+  { n:18, text:"At sikre nogle rutiner, der skaber struktur og orden i de frivilliges arbejdsform.",                                          style:"admin" },
+  { n:19, text:"At sikre, at de dygtigste frivillige bliver fremhævet foran resten af frivilliggruppen.",                                    style:"praes" },
+  { n:20, text:"At være inspirerende og en kreativ medspiller for frivilliggruppen.",                                                         style:"ideo"  },
+  { n:21, text:"At styre og følge de frivilliges arbejde helt til dørs.",                                                                    style:"praes" },
+  { n:22, text:"At skabe et åbent, positivt og tillidsfuldt frivilligmiljø i gruppen.",                                                      style:"vaert" },
+  { n:23, text:"At gøre organisationens mål, vision og langsigtede planer synlige og forståelige for alle.",                                 style:"ideo"  },
+  { n:24, text:"At sige tingene direkte og sætte ind til benet i de frivilliges arbejde, så vi når vores mål.",                              style:"admin" }
+];
+
+const styleColors = { vaert:"#0f6e56", admin:"#185fa5", praes:"#993c1d", ideo:"#6d28d9" };
+const styleNames  = { vaert:"Værten", admin:"Administratoren", praes:"Præstationstripperen", ideo:"Idémageren" };
+const answered    = new Set();
+
+// ── Build question cards (no style tag shown) ──
+function buildCards() {
+  const container = document.getElementById('questions');
+  questions.forEach(q => {
+    const card = document.createElement('div');
+    card.className='q-card'; card.id='card-'+q.n;
+    const radios = answerOpts.map(o =>
+      `<label><input type="radio" name="q${q.n}" value="${o.val}" onchange="onAnswer(${q.n})"><span class="radio-btn">${o.label}</span></label>`
+    ).join('');
+    card.innerHTML = `
+      <div class="q-num">${q.n}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="radio-row">${radios}</div>`;
+    container.appendChild(card);
+  });
+}
+
+function onAnswer(n) {
+  answered.add(n);
+  const card = document.getElementById('card-'+n);
+  card.classList.add('answered'); card.classList.remove('missing');
+  document.getElementById('prog').style.width = Math.round(answered.size/24*100)+'%';
+  document.getElementById('prog-label').textContent = answered.size+' / 24';
+  document.getElementById('missing-note').style.display = 'none';
+}
+
+function getVal(n) {
+  for (const r of document.querySelectorAll(`input[name="q${n}"]`)) if (r.checked) return parseInt(r.value);
+  return null;
+}
+
+document.getElementById('btn-submit').addEventListener('click', function() {
+  if (answered.size < 24) {
+    document.getElementById('missing-note').style.display='block';
+    questions.forEach(q => { if (!answered.has(q.n)) document.getElementById('card-'+q.n).classList.add('missing'); });
+    return;
+  }
+  showResult();
+});
+
+function showResult() {
+  const sc = { vaert:0, admin:0, praes:0, ideo:0 };
+  questions.forEach(q => { sc[q.style] += getVal(q.n); });
+
+  document.getElementById('s-vaert').textContent = sc.vaert;
+  document.getElementById('s-admin').textContent = sc.admin;
+  document.getElementById('s-praes').textContent = sc.praes;
+  document.getElementById('s-ideo').textContent  = sc.ideo;
+
+  const rs = document.getElementById('result-section');
+  rs.classList.add('show');
+  setTimeout(() => rs.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  setTimeout(() => drawDiagram(sc), 200);
+
+  const sorted = Object.entries(sc).sort((a,b) => b[1]-a[1]);
+  const descs = {
+    vaert: "Din primære ledelsesstil er <strong>Værten</strong>: du skaber trygge relationer, støtter og motiverer de frivillige menneskeligt og sørger for et godt socialt miljø i gruppen.",
+    admin: "Din primære ledelsesstil er <strong>Administratoren</strong>: du sikrer struktur, planlægning og klare procedurer, så arbejdet bliver udført systematisk og målrettet.",
+    praes: "Din primære ledelsesstil er <strong>Præstationstripperen</strong>: du fokuserer på resultater og høj indsats, og du går forrest som energisk rollemodel for de frivillige.",
+    ideo:  "Din primære ledelsesstil er <strong>Idémageren</strong>: du inspirerer til forandring og kreativitet, og du hjælper gruppen med at navigere i nye retninger og initiativer."
+  };
+  document.getElementById('result-note').innerHTML = descs[sorted[0][0]];
+}
+
+// ── Draw 2×2 grid diagram ──
+// Layout: top-left=Admin, top-right=Vært, bottom-left=Ideo, bottom-right=Praes
+// Score goes from centre (0) toward the corner (max 24).
+// We plot a dot in each quadrant at a distance proportional to that style's score.
+function drawDiagram(sc) {
+  const canvas  = document.getElementById('diagram');
+  const dpr     = window.devicePixelRatio || 1;
+  const padding = 16;
+  const avail   = Math.min(canvas.parentElement.clientWidth - padding*2, 480);
+  canvas.style.width  = avail+'px';
+  canvas.style.height = avail+'px';
+  canvas.width  = avail * dpr;
+  canvas.height = avail * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const W = avail, H = avail;
+
+  // Margins for axis labels
+  const M = 44;  // label margin on all sides
+  const gW = W - M*2;  // grid total width
+  const gH = H - M*2;  // grid total height
+  const cx = M + gW/2; // centre x
+  const cy = M + gH/2; // centre y
+  const hw = gW/2;     // half-width of grid
+  const hh = gH/2;     // half-height of grid
+  const maxScore = 24;
+
+  ctx.clearRect(0,0,W,H);
+
+  // ── Quadrant fills ──
+  // top-left: Admin (blue)
+  roundRect(ctx, M, M, hw, hh, [8,0,0,0]); ctx.fillStyle='rgba(24,95,165,0.07)'; ctx.fill();
+  // top-right: Vært (green)
+  roundRect(ctx, cx, M, hw, hh, [0,8,0,0]); ctx.fillStyle='rgba(15,110,86,0.07)'; ctx.fill();
+  // bottom-left: Idémager (purple)
+  roundRect(ctx, M, cy, hw, hh, [0,0,0,8]); ctx.fillStyle='rgba(109,40,217,0.07)'; ctx.fill();
+  // bottom-right: Præstationstripper (orange)
+  roundRect(ctx, cx, cy, hw, hh, [0,0,8,0]); ctx.fillStyle='rgba(153,60,29,0.07)'; ctx.fill();
+
+  // ── Grid lines ──
+  // Outer border
+  ctx.strokeStyle='#b0ada6'; ctx.lineWidth=1;
+  ctx.strokeRect(M, M, gW, gH);
+
+  // Inner dividers (centre cross) — slightly thicker
+  ctx.strokeStyle='#888580'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx,M); ctx.lineTo(cx,M+gH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(M,cy); ctx.lineTo(M+gW,cy); ctx.stroke();
+
+  // ── Dashed sub-grid lines ──
+  ctx.setLineDash([2,5]); ctx.strokeStyle='#d0cdc6'; ctx.lineWidth=0.6;
+  [-1,1].forEach(sign => {
+    [8,16].forEach(v => {
+      const xOff = sign*v/maxScore*hw;
+      const yOff = sign*v/maxScore*hh;
+      ctx.beginPath(); ctx.moveTo(cx+xOff, M); ctx.lineTo(cx+xOff, M+gH); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(M, cy+yOff); ctx.lineTo(M+gW, cy+yOff); ctx.stroke();
+    });
+  });
+  ctx.setLineDash([]);
+
+  // ── Quadrant name labels ──
+  ctx.font='600 13px "DM Sans",sans-serif';
+  ctx.fillStyle='#185fa5'; ctx.textAlign='left';  ctx.textBaseline='top';    ctx.fillText('Administratoren',    M+8,    M+8);
+  ctx.fillStyle='#0f6e56'; ctx.textAlign='right'; ctx.textBaseline='top';    ctx.fillText('Værten',             M+gW-8, M+8);
+  ctx.fillStyle='#6d28d9'; ctx.textAlign='left';  ctx.textBaseline='bottom'; ctx.fillText('Idémageren',         M+8,    M+gH-8);
+  ctx.fillStyle='#993c1d'; ctx.textAlign='right'; ctx.textBaseline='bottom'; ctx.fillText('Præstationstripperen', M+gW-8, M+gH-8);
+
+  // ── Scale labels along each quadrant's diagonal (from centre -24 to corner +24) ──
+  // The diagonal goes from centre (cx,cy) to the corner of each quadrant.
+  // We map score s ∈ [-24..24] → t ∈ [0..1] along that diagonal: t = (s+24)/48
+  // Then pixel pos = centre + t * (corner - centre)
+  //
+  // Quadrant corners (pixel):
+  //   Admin:  (M,    M)        top-left
+  //   Vært:   (M+gW, M)        top-right
+  //   Praes:  (M+gW, M+gH)    bottom-right
+  //   Ideo:   (M,    M+gH)    bottom-left
+
+  const quadrants = [
+    { key:'admin', cornerX: M,      cornerY: M,      labelAnchor:'end'   },
+    { key:'vaert', cornerX: M+gW,   cornerY: M,      labelAnchor:'start' },
+    { key:'praes', cornerX: M+gW,   cornerY: M+gH,   labelAnchor:'start' },
+    { key:'ideo',  cornerX: M,      cornerY: M+gH,   labelAnchor:'end'   },
+  ];
+
+  ctx.font = '500 10px "DM Sans",sans-serif';
+  ctx.fillStyle = '#aaa';
+
+  quadrants.forEach(q => {
+    const dirX = q.cornerX - cx;  // vector from centre to corner
+    const dirY = q.cornerY - cy;
+
+    [-24, -8, 8, 24].forEach(score => {
+      const t = (score + 24) / 48;   // 0 at centre (-24), 1 at corner (+24)
+      const px = cx + t * dirX;
+      const py = cy + t * dirY;
+
+      // Small tick mark perpendicular to diagonal
+      const len = Math.sqrt(dirX*dirX + dirY*dirY);
+      const perpX = -dirY/len * 4;
+      const perpY =  dirX/len * 4;
+      ctx.strokeStyle='#bbb'; ctx.lineWidth=0.8;
+      ctx.beginPath(); ctx.moveTo(px-perpX, py-perpY); ctx.lineTo(px+perpX, py+perpY); ctx.stroke();
+
+      // Label — offset slightly away from the diagonal line
+      const offsetX = perpX * 2.2;
+      const offsetY = perpY * 2.2;
+      ctx.save();
+      // Rotate text to align with diagonal
+      const angle = Math.atan2(dirY, dirX);
+      ctx.translate(px + offsetX, py + offsetY);
+      ctx.rotate(angle);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = offsetY < 0 ? 'bottom' : 'top';
+      ctx.fillStyle = '#aaa';
+      ctx.fillText(score, 0, 0);
+      ctx.restore();
+    });
+  });
+
+  // ── Plot each style's dot along its quadrant diagonal ──
+  quadrants.forEach(q => {
+    const score = sc[q.key];
+    const t = (score + 24) / 48;   // maps -24→0 (centre), +24→1 (corner)
+    const px = cx + t * (q.cornerX - cx);
+    const py = cy + t * (q.cornerY - cy);
+    const col = styleColors[q.key];
+
+    // Dashed spoke along diagonal from centre to dot
+    ctx.setLineDash([3,4]); ctx.strokeStyle=col+'66'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(px,py); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Glow
+    ctx.beginPath(); ctx.arc(px,py,15,0,Math.PI*2);
+    ctx.fillStyle=col+'22'; ctx.fill();
+    // Dot
+    ctx.beginPath(); ctx.arc(px,py,9,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+  });
+
+  // Centre dot
+  ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2);
+  ctx.fillStyle='#bbb'; ctx.fill();
+}
+
+function roundRect(ctx, x, y, w, h, radii) {
+  const [tl,tr,br,bl] = radii;
+  ctx.beginPath();
+  ctx.moveTo(x+tl, y);
+  ctx.lineTo(x+w-tr, y); ctx.arcTo(x+w,y, x+w,y+tr, tr);
+  ctx.lineTo(x+w, y+h-br); ctx.arcTo(x+w,y+h, x+w-br,y+h, br);
+  ctx.lineTo(x+bl, y+h); ctx.arcTo(x,y+h, x,y+h-bl, bl);
+  ctx.lineTo(x, y+tl); ctx.arcTo(x,y, x+tl,y, tl);
+  ctx.closePath();
+}
+
+document.getElementById('btn-reset').addEventListener('click', function() {
+  answered.clear();
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked=false);
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('answered','missing'));
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('prog-label').textContent='0 / 24';
+  document.getElementById('result-section').classList.remove('show');
+  document.getElementById('missing-note').style.display='none';
+  window.scrollTo({ top:0, behavior:'smooth' });
+});
+
+buildCards();
+</script>
+</div>
+
+<script>
+const answerOpts = [
+  { label:"Meget",      val: 4 },
+  { label:"En del",     val: 2 },
+  { label:"Neutral",    val: 0 },
+  { label:"Ikke meget", val:-2 },
+  { label:"Meget lidt", val:-4 }
+];
+
+// Styles: vaert=Vært, admin=Admin, praes=Præstations., ideo=Idémager
+// No style tags shown to students
+const questions = [
+  { n:1,  text:"At hjælpe og støtte de frivillige, hvis de har det svært.",                                                                   style:"vaert" },
+  { n:2,  text:"At organisere aktiviteter, så de frivillige kan løse deres opgaver grundigt og systematisk.",                                 style:"admin" },
+  { n:3,  text:"At jeg oplever og handler som en energisk og målrettet leder, når frivilliggruppen er aktiv.",                                style:"praes" },
+  { n:4,  text:"At gå foran, når frivilliggruppen står foran ændringer og forandringer.",                                                     style:"ideo"  },
+  { n:5,  text:"At formulere nogle klare retningslinjer for de frivilliges ansvar og arbejde.",                                               style:"admin" },
+  { n:6,  text:"At skabe et frivilligmiljø med plads og tid til socialt samvær og småsnak.",                                                  style:"vaert" },
+  { n:7,  text:"At inspirere de frivillige til selv at finde kreative løsninger på problemer.",                                               style:"ideo"  },
+  { n:8,  text:"At sikre mig, at alle altid udnytter deres egen tid og gruppens ressourcer effektivt og målrettet.",                          style:"praes" },
+  { n:9,  text:"At opmunte, anerkende, støtte og motivere de frivillige.",                                                                    style:"vaert" },
+  { n:10, text:"At have nogle procedurer, der sikrer, at jeg altid kan tjekke, om de frivillige følger planerne.",                           style:"admin" },
+  { n:11, text:"At jeg altid selv går foran og yder en effektiv indsats for, at vi når vores mål.",                                          style:"praes" },
+  { n:12, text:"At sikre gode faciliteter og rammer for, at de frivillige kan arbejde selvstændigt.",                                         style:"ideo"  },
+  { n:13, text:"At jeg træffer mine beslutninger på basis af klare og sikre fakta.",                                                          style:"admin" },
+  { n:14, text:"At kende de frivilliges baggrund, værdier og holdninger.",                                                                   style:"vaert" },
+  { n:15, text:"At spille en central rolle i de frivilliges udvikling og nye initiativer.",                                                   style:"ideo"  },
+  { n:16, text:"At de frivillige ikke spilder tiden, men koncentrerer sig om at levere det, de skal.",                                       style:"praes" },
+  { n:17, text:"At mægle, når frivillige har forskellige meninger og interesser, der truer med at skabe konflikter.",                        style:"vaert" },
+  { n:18, text:"At sikre nogle rutiner, der skaber struktur og orden i de frivilliges arbejdsform.",                                          style:"admin" },
+  { n:19, text:"At sikre, at de dygtigste frivillige bliver fremhævet foran resten af frivilliggruppen.",                                    style:"praes" },
+  { n:20, text:"At være inspirerende og en kreativ medspiller for frivilliggruppen.",                                                         style:"ideo"  },
+  { n:21, text:"At styre og følge de frivilliges arbejde helt til dørs.",                                                                    style:"praes" },
+  { n:22, text:"At skabe et åbent, positivt og tillidsfuldt frivilligmiljø i gruppen.",                                                      style:"vaert" },
+  { n:23, text:"At gøre organisationens mål, vision og langsigtede planer synlige og forståelige for alle.",                                 style:"ideo"  },
+  { n:24, text:"At sige tingene direkte og sætte ind til benet i de frivilliges arbejde, så vi når vores mål.",                              style:"admin" }
+];
+
+const styleColors = { vaert:"#0f6e56", admin:"#185fa5", praes:"#993c1d", ideo:"#6d28d9" };
+const styleNames  = { vaert:"Værten", admin:"Administratoren", praes:"Præstationstripperen", ideo:"Idémageren" };
+const answered    = new Set();
+
+// ── Build question cards (no style tag shown) ──
+function buildCards() {
+  const container = document.getElementById('questions');
+  questions.forEach(q => {
+    const card = document.createElement('div');
+    card.className='q-card'; card.id='card-'+q.n;
+    const radios = answerOpts.map(o =>
+      `<label><input type="radio" name="q${q.n}" value="${o.val}" onchange="onAnswer(${q.n})"><span class="radio-btn">${o.label}</span></label>`
+    ).join('');
+    card.innerHTML = `
+      <div class="q-num">${q.n}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="radio-row">${radios}</div>`;
+    container.appendChild(card);
+  });
+}
+
+function onAnswer(n) {
+  answered.add(n);
+  const card = document.getElementById('card-'+n);
+  card.classList.add('answered'); card.classList.remove('missing');
+  document.getElementById('prog').style.width = Math.round(answered.size/24*100)+'%';
+  document.getElementById('prog-label').textContent = answered.size+' / 24';
+  document.getElementById('missing-note').style.display = 'none';
+}
+
+function getVal(n) {
+  for (const r of document.querySelectorAll(`input[name="q${n}"]`)) if (r.checked) return parseInt(r.value);
+  return null;
+}
+
+document.getElementById('btn-submit').addEventListener('click', function() {
+  if (answered.size < 24) {
+    document.getElementById('missing-note').style.display='block';
+    questions.forEach(q => { if (!answered.has(q.n)) document.getElementById('card-'+q.n).classList.add('missing'); });
+    return;
+  }
+  showResult();
+});
+
+function showResult() {
+  const sc = { vaert:0, admin:0, praes:0, ideo:0 };
+  questions.forEach(q => { sc[q.style] += getVal(q.n); });
+
+  document.getElementById('s-vaert').textContent = sc.vaert;
+  document.getElementById('s-admin').textContent = sc.admin;
+  document.getElementById('s-praes').textContent = sc.praes;
+  document.getElementById('s-ideo').textContent  = sc.ideo;
+
+  const rs = document.getElementById('result-section');
+  rs.classList.add('show');
+  setTimeout(() => rs.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  setTimeout(() => drawDiagram(sc), 200);
+
+  const sorted = Object.entries(sc).sort((a,b) => b[1]-a[1]);
+  const descs = {
+    vaert: "Din primære ledelsesstil er <strong>Værten</strong>: du skaber trygge relationer, støtter og motiverer de frivillige menneskeligt og sørger for et godt socialt miljø i gruppen.",
+    admin: "Din primære ledelsesstil er <strong>Administratoren</strong>: du sikrer struktur, planlægning og klare procedurer, så arbejdet bliver udført systematisk og målrettet.",
+    praes: "Din primære ledelsesstil er <strong>Præstationstripperen</strong>: du fokuserer på resultater og høj indsats, og du går forrest som energisk rollemodel for de frivillige.",
+    ideo:  "Din primære ledelsesstil er <strong>Idémageren</strong>: du inspirerer til forandring og kreativitet, og du hjælper gruppen med at navigere i nye retninger og initiativer."
+  };
+  document.getElementById('result-note').innerHTML = descs[sorted[0][0]];
+}
+
+// ── Draw 2×2 grid diagram ──
+// Layout: top-left=Admin, top-right=Vært, bottom-left=Ideo, bottom-right=Praes
+// Score goes from centre (0) toward the corner (max 24).
+// We plot a dot in each quadrant at a distance proportional to that style's score.
+function drawDiagram(sc) {
+  const canvas  = document.getElementById('diagram');
+  const dpr     = window.devicePixelRatio || 1;
+  const padding = 16;
+  const avail   = Math.min(canvas.parentElement.clientWidth - padding*2, 480);
+  canvas.style.width  = avail+'px';
+  canvas.style.height = avail+'px';
+  canvas.width  = avail * dpr;
+  canvas.height = avail * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const W = avail, H = avail;
+
+  // Margins for axis labels
+  const M = 44;  // label margin on all sides
+  const gW = W - M*2;  // grid total width
+  const gH = H - M*2;  // grid total height
+  const cx = M + gW/2; // centre x
+  const cy = M + gH/2; // centre y
+  const hw = gW/2;     // half-width of grid
+  const hh = gH/2;     // half-height of grid
+  const maxScore = 24;
+
+  ctx.clearRect(0,0,W,H);
+
+  // ── Quadrant fills ──
+  // top-left: Admin (blue)
+  roundRect(ctx, M, M, hw, hh, [8,0,0,0]); ctx.fillStyle='rgba(24,95,165,0.07)'; ctx.fill();
+  // top-right: Vært (green)
+  roundRect(ctx, cx, M, hw, hh, [0,8,0,0]); ctx.fillStyle='rgba(15,110,86,0.07)'; ctx.fill();
+  // bottom-left: Idémager (purple)
+  roundRect(ctx, M, cy, hw, hh, [0,0,0,8]); ctx.fillStyle='rgba(109,40,217,0.07)'; ctx.fill();
+  // bottom-right: Præstationstripper (orange)
+  roundRect(ctx, cx, cy, hw, hh, [0,0,8,0]); ctx.fillStyle='rgba(153,60,29,0.07)'; ctx.fill();
+
+  // ── Grid lines ──
+  // Outer border
+  ctx.strokeStyle='#b0ada6'; ctx.lineWidth=1;
+  ctx.strokeRect(M, M, gW, gH);
+
+  // Inner dividers (centre cross) — slightly thicker
+  ctx.strokeStyle='#888580'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx,M); ctx.lineTo(cx,M+gH); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(M,cy); ctx.lineTo(M+gW,cy); ctx.stroke();
+
+  // ── Dashed sub-grid lines ──
+  ctx.setLineDash([2,5]); ctx.strokeStyle='#d0cdc6'; ctx.lineWidth=0.6;
+  [-1,1].forEach(sign => {
+    [8,16].forEach(v => {
+      const xOff = sign*v/maxScore*hw;
+      const yOff = sign*v/maxScore*hh;
+      ctx.beginPath(); ctx.moveTo(cx+xOff, M); ctx.lineTo(cx+xOff, M+gH); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(M, cy+yOff); ctx.lineTo(M+gW, cy+yOff); ctx.stroke();
+    });
+  });
+  ctx.setLineDash([]);
+
+  // ── Quadrant name labels ──
+  ctx.font='600 13px "DM Sans",sans-serif';
+  ctx.fillStyle='#185fa5'; ctx.textAlign='left';  ctx.textBaseline='top';    ctx.fillText('Administratoren',    M+8,    M+8);
+  ctx.fillStyle='#0f6e56'; ctx.textAlign='right'; ctx.textBaseline='top';    ctx.fillText('Værten',             M+gW-8, M+8);
+  ctx.fillStyle='#6d28d9'; ctx.textAlign='left';  ctx.textBaseline='bottom'; ctx.fillText('Idémageren',         M+8,    M+gH-8);
+  ctx.fillStyle='#993c1d'; ctx.textAlign='right'; ctx.textBaseline='bottom'; ctx.fillText('Præstationstripperen', M+gW-8, M+gH-8);
+
+  // ── Scale labels along each quadrant's diagonal (from centre -24 to corner +24) ──
+  // The diagonal goes from centre (cx,cy) to the corner of each quadrant.
+  // We map score s ∈ [-24..24] → t ∈ [0..1] along that diagonal: t = (s+24)/48
+  // Then pixel pos = centre + t * (corner - centre)
+  //
+  // Quadrant corners (pixel):
+  //   Admin:  (M,    M)        top-left
+  //   Vært:   (M+gW, M)        top-right
+  //   Praes:  (M+gW, M+gH)    bottom-right
+  //   Ideo:   (M,    M+gH)    bottom-left
+
+  const quadrants = [
+    { key:'admin', cornerX: M,      cornerY: M,      labelAnchor:'end'   },
+    { key:'vaert', cornerX: M+gW,   cornerY: M,      labelAnchor:'start' },
+    { key:'praes', cornerX: M+gW,   cornerY: M+gH,   labelAnchor:'start' },
+    { key:'ideo',  cornerX: M,      cornerY: M+gH,   labelAnchor:'end'   },
+  ];
+
+  ctx.font = '500 10px "DM Sans",sans-serif';
+  ctx.fillStyle = '#aaa';
+
+  quadrants.forEach(q => {
+    const dirX = q.cornerX - cx;  // vector from centre to corner
+    const dirY = q.cornerY - cy;
+
+    [-24, -8, 8, 24].forEach(score => {
+      const t = (score + 24) / 48;   // 0 at centre (-24), 1 at corner (+24)
+      const px = cx + t * dirX;
+      const py = cy + t * dirY;
+
+      // Small tick mark perpendicular to diagonal
+      const len = Math.sqrt(dirX*dirX + dirY*dirY);
+      const perpX = -dirY/len * 4;
+      const perpY =  dirX/len * 4;
+      ctx.strokeStyle='#bbb'; ctx.lineWidth=0.8;
+      ctx.beginPath(); ctx.moveTo(px-perpX, py-perpY); ctx.lineTo(px+perpX, py+perpY); ctx.stroke();
+
+      // Label — offset slightly away from the diagonal line
+      const offsetX = perpX * 2.2;
+      const offsetY = perpY * 2.2;
+      ctx.save();
+      // Rotate text to align with diagonal
+      const angle = Math.atan2(dirY, dirX);
+      ctx.translate(px + offsetX, py + offsetY);
+      ctx.rotate(angle);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = offsetY < 0 ? 'bottom' : 'top';
+      ctx.fillStyle = '#aaa';
+      ctx.fillText(score, 0, 0);
+      ctx.restore();
+    });
+  });
+
+  // ── Plot each style's dot along its quadrant diagonal ──
+  quadrants.forEach(q => {
+    const score = sc[q.key];
+    const t = (score + 24) / 48;   // maps -24→0 (centre), +24→1 (corner)
+    const px = cx + t * (q.cornerX - cx);
+    const py = cy + t * (q.cornerY - cy);
+    const col = styleColors[q.key];
+
+    // Dashed spoke along diagonal from centre to dot
+    ctx.setLineDash([3,4]); ctx.strokeStyle=col+'66'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(px,py); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Glow
+    ctx.beginPath(); ctx.arc(px,py,15,0,Math.PI*2);
+    ctx.fillStyle=col+'22'; ctx.fill();
+    // Dot
+    ctx.beginPath(); ctx.arc(px,py,9,0,Math.PI*2);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=2.5; ctx.stroke();
+  });
+
+  // Centre dot
+  ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2);
+  ctx.fillStyle='#bbb'; ctx.fill();
+}
+
+function roundRect(ctx, x, y, w, h, radii) {
+  const [tl,tr,br,bl] = radii;
+  ctx.beginPath();
+  ctx.moveTo(x+tl, y);
+  ctx.lineTo(x+w-tr, y); ctx.arcTo(x+w,y, x+w,y+tr, tr);
+  ctx.lineTo(x+w, y+h-br); ctx.arcTo(x+w,y+h, x+w-br,y+h, br);
+  ctx.lineTo(x+bl, y+h); ctx.arcTo(x,y+h, x,y+h-bl, bl);
+  ctx.lineTo(x, y+tl); ctx.arcTo(x,y, x+tl,y, tl);
+  ctx.closePath();
+}
+
+document.getElementById('btn-reset').addEventListener('click', function() {
+  answered.clear();
+  document.querySelectorAll('input[type=radio]').forEach(r => r.checked=false);
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('answered','missing'));
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('prog-label').textContent='0 / 24';
+  document.getElementById('result-section').classList.remove('show');
+  document.getElementById('missing-note').style.display='none';
+  document.getElementById('ls-widget').scrollIntoView({ behavior:'smooth', block:'start' });
+});
+
+buildCards();
+</script>
