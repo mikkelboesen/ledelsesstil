@@ -318,14 +318,29 @@ function showResult() {
   setTimeout(() => drawDiagram(sc), 200);
 
   const sorted = Object.entries(sc).sort((a,b) => b[1]-a[1]);
+  const topScore = sorted[0][1];
+  const topStyles = sorted.filter(([,v]) => v === topScore);
+
   const descs = {
     vaert: "Din primære ledelsesstil er <strong>Værten</strong>: du skaber trygge relationer, støtter og motiverer de frivillige menneskeligt og sørger for et godt socialt miljø i gruppen.",
     admin: "Din primære ledelsesstil er <strong>Administratoren</strong>: du sikrer struktur, planlægning og klare procedurer, så arbejdet bliver udført systematisk og målrettet.",
     praes: "Din primære ledelsesstil er <strong>Præstationstripperen</strong>: du fokuserer på resultater og høj indsats, og du går forrest som energisk rollemodel for de frivillige.",
     ideo:  "Din primære ledelsesstil er <strong>Idémageren</strong>: du inspirerer til forandring og kreativitet, og du hjælper gruppen med at navigere i nye retninger og initiativer."
   };
-  document.getElementById('result-note').innerHTML = descs[sorted[0][0]];
-  buildFeedback(sorted[0][0]);
+
+  let noteHTML, primaryKey;
+  if (topStyles.length > 1) {
+    const names = topStyles.map(([k]) => `<strong>${styleData[k].name}</strong>`);
+    const last = names.pop();
+    noteHTML = `Dine svar giver lige høj score på ${names.join(', ')} og ${last}. Du har ikke én dominerende ledelsesstil – du trækker ligeligt på flere. Læs beskrivelserne nedenfor og overvej, hvilken der føles mest sand for dig.`;
+    primaryKey = null;
+  } else {
+    primaryKey = sorted[0][0];
+    noteHTML = descs[primaryKey];
+  }
+
+  document.getElementById('result-note').innerHTML = noteHTML;
+  buildFeedback(primaryKey);
 }
 
 // ── Draw 2×2 grid diagram ──
@@ -536,7 +551,7 @@ function buildFeedback(primaryKey) {
   const order = ['vaert', 'ideo', 'admin', 'praes'];
   order.forEach(key => {
     const d = styleData[key];
-    const isPrimary = key === primaryKey;
+    const isPrimary = key === primaryKey && primaryKey !== null;
     const card = document.createElement('div');
     card.className = `style-card ${key}${isPrimary ? ' primary-style' : ''}`;
     card.innerHTML = `
